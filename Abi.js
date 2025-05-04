@@ -1697,38 +1697,6 @@ const oracleABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "pool",
-				"type": "address"
-			}
-		],
-		"name": "GetPrice",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "price",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "V3Pool",
-		"outputs": [
-			{
-				"internalType": "contract ICLPoolDerivedState",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "uint256",
 				"name": "amount0ToMint",
 				"type": "uint256"
@@ -1753,6 +1721,25 @@ const oracleABI = [
 				"type": "address"
 			}
 		],
+		"name": "GetPrice",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "price",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "pool",
+				"type": "address"
+			}
+		],
 		"name": "getTicks",
 		"outputs": [
 			{
@@ -1764,6 +1751,24 @@ const oracleABI = [
 				"internalType": "int24",
 				"name": "highTick",
 				"type": "int24"
+			},
+			{
+				"internalType": "int24",
+				"name": "baseTick",
+				"type": "int24"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "V3Pool",
+		"outputs": [
+			{
+				"internalType": "contract ICLPoolDerivedState",
+				"name": "",
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",

@@ -61,7 +61,7 @@ const token1 = "0x9560e827aF36c94D2Ac33a39bCE1Fe78631088Db";
 const tickSpacing = 200;
 const LiquidityCalcAddress = "0xcF8F0BB8A2b2608c184455613e525D03C63DD3D4";
 const USDCvelo = "0x7cfc2Da3ba598ef4De692905feDcA32565AB836E";
-const Oracle = "0x9d0cffe335a077851aA3D3Fc37EC5f0605f0f649";
+const Oracle = "0xcBFe04648C9209ab7d5d2A7d7F401C22faEaCdD9";
 const V3SwapAddress = "0x44cccE81441A3cb00DC5d8fCd3A198Ce41282066"
 
 const token0Contract = new web3m.eth.Contract(ERC20_ABI, token0);
@@ -86,6 +86,16 @@ const V3SwapContract = new web3m.eth.Contract(V3SwapABI, V3SwapAddress);
   }
   document.getElementById('ApproveToken0').addEventListener('click', approvetoken0);
 
+  async function getTokenId() {
+    let account = document.getElementById('connectbutton').innerText;
+    let _tokenID = await positionManager.methods.tokenByIndex(0).call();
+    console.log(_tokenID);
+          // Use object destructuring for named outputs
+    return _tokenID;
+  }
+
+  document.getElementById('ApproveStake').addEventListener('click', getTokenId);
+
 // Approve token1
 async function approvetoken1() {
 
@@ -107,9 +117,17 @@ async function approvetoken1() {
 async function depositLiquidity() {
     let account = document.getElementById('connectbutton').innerText;
 
-    let ticks = await LiquidityCalc.methods.getTicks(USDCvelo).call();
+    let ticks = await oracleContract.methods.getTicks(USDCvelo).call();
           // Use object destructuring for named outputs
-    let { lowTick: tickLower, highTick: tickUpper } = ticks;
+    let { lowTick: tickLower, highTick: tickUpper , baseTick: tick} = ticks;
+    let _TickHigh = typeof tickUpper === 'bigint' ? Number(tickUpper) : Number(tickUpper);
+    let _Tick = typeof tick === 'bigint' ? Number(tick) : Number(tick);
+    console.log(tickUpper);
+    console.log(_TickHigh);
+    console.log(tick);
+    console.log(_Tick);
+    let proportion = (_TickHigh - _Tick) / 200;
+    console.log(proportion);
     let _token0bal = await wtoken0Contract.methods.balanceOf(account).call();
     let token0bal = typeof _token0bal === 'bigint' ? Number(_token0bal) : Number(_token0bal);
     token0bal = token0bal / (10 ** 6);
@@ -126,6 +144,10 @@ async function depositLiquidity() {
     let veloCost = token1bal * price;
     console.log(veloCost);
     let variance = token0bal - veloCost;
+    let varper = veloCost / (token0bal + veloCost);
+    console.log(token0bal);
+    console.log(veloCost);
+    console.log(`Percent ${varper} VELO for USDC...`);
     console.log(variance);
     if (variance < 0) {
       let swap1Amount = (((-variance / 2) / price) * (10 ** 18));
@@ -147,8 +169,8 @@ async function depositLiquidity() {
     }
     //.send({ from: account, gas: 1600 });
 
-    let amount0Desired = await wtoken0Contract.methods.balanceOf(account).call();
-    let amount1Desired = await wtoken1Contract.methods.balanceOf(account).call();
+    let amount0Desired = await token0Contract.methods.balanceOf(account).call();
+    let amount1Desired = await token1Contract.methods.balanceOf(account).call();
     // Use object destructuring for named outputs
     //let amountsdesired = await LiquidityCalc.methods.getAmountsforLiquidity(USDCvelo,'10000000000000').call();
               // Use object destructuring for named outputs
