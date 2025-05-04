@@ -67,6 +67,7 @@ const V3SwapAddress = "0x44cccE81441A3cb00DC5d8fCd3A198Ce41282066"
 const token0Contract = new web3m.eth.Contract(ERC20_ABI, token0);
 const wtoken0Contract = new web3.eth.Contract(ERC20_ABI, token0);
 const token1Contract = new web3m.eth.Contract(ERC20_ABI, token1);
+const wtoken1Contract = new web3.eth.Contract(ERC20_ABI, token1);
 const LiquidityCalc = new web3m.eth.Contract(LiquidityCalcABI, LiquidityCalcAddress);
 const positionManager = new web3m.eth.Contract(SSPOSITION_MANAGER_ABI, POSITION_MANAGER_ADDRESS);
 const oracleContract = new web3m.eth.Contract(oracleABI, Oracle);
@@ -114,7 +115,7 @@ async function depositLiquidity() {
     token0bal = token0bal / (10 ** 6);
     //token0bal = balanceNumber / Math.pow(10, decimals);
     console.log(token0bal);
-    let _token1bal = await token1Contract.methods.balanceOf(account).call();
+    let _token1bal = await wtoken1Contract.methods.balanceOf(account).call();
     let token1bal = typeof _token1bal === 'bigint' ? Number(_token1bal) : Number(_token1bal);
     token1bal = token1bal / (10 ** 18);
     console.log(token1bal);
@@ -135,12 +136,23 @@ async function depositLiquidity() {
         .send({ from: account });
       console.log('Swap successful:', receipt);
     }
+    if (variance > 0){
+      let swap0Amount = (variance / 2) * 10 ** 6;
+      swap0Amount = Math.floor(swap0Amount).toString(); // Convert to integer string
+      console.log(`Swapping ${swap0Amount} VELO for USDC...`);
+      const receipt = await V3SwapContract.methods
+        .Swap0for1(swap0Amount)
+        .send({ from: account });
+      console.log('Swap successful:', receipt);
+    }
     //.send({ from: account, gas: 1600 });
 
+    let amount0Desired = await wtoken0Contract.methods.balanceOf(account).call();
+    let amount1Desired = await wtoken1Contract.methods.balanceOf(account).call();
     // Use object destructuring for named outputs
-    let amountsdesired = await LiquidityCalc.methods.getAmountsforLiquidity(USDCvelo,'10000000000000').call();
+    //let amountsdesired = await LiquidityCalc.methods.getAmountsforLiquidity(USDCvelo,'10000000000000').call();
               // Use object destructuring for named outputs
-    const { amount0: amount0Desired, amount1: amount1Desired } = amountsdesired;
+    //const { amount0: amount0Desired, amount1: amount1Desired } = amountsdesired;
 
       // Set deadline (e.g., 30 minutes from now)
       const deadline = Math.floor(Date.now() / 1000) + 30 *60;
