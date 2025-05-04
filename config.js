@@ -1,6 +1,4 @@
-require('dotenv').config();
+// config.js
+export const infuraProjectId = import.meta.env.INFURA_PROJECT_ID;
+export const privateKey = import.meta.env.PRIVATE_KEY;
 
-module.exports = {
-  infuraProjectId: process.env.INFURA_PROJECT_ID,
-  privateKey: process.env.PRIVATE_KEY
-};
